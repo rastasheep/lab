@@ -16,6 +16,35 @@ fi
 date=$(date '+%Y-%m-%d--%H-%M')
 title=$(echo "${date}--${@}" | tr ' ' '-')
 
+cat > .git/hooks/pre-push<<- "EOM"
+#!/bin/sh
+
+main_branch='master'
+
+policy='[Policy] Never force push or delete the experiment branch! (Prevented with pre-push hook.)'
+
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+push_command=$(ps -ocommand= -p $PPID)
+
+is_destructive='push|force|delete|\-f'
+
+do_exit(){
+  echo $policy
+  exit 1
+}
+
+if [[ $push_command =~ $is_destructive ]] && [ $current_branch != $main_branch ]; then
+  do_exit
+fi
+
+unset do_exit
+
+exit 0
+EOM
+
+chmod +x .git/hooks/pre-push
+
 git checkout main
 git pull
 git checkout -b $title
