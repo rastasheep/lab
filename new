@@ -19,9 +19,7 @@ title=$(echo "${date}--${@}" | tr ' ' '-')
 cat > .git/hooks/pre-push<<- "EOM"
 #!/bin/sh
 
-main_branch='master'
-
-policy='[Policy] Never force push or delete the experiment branch! (Prevented with pre-push hook.)'
+main_branch='main'
 
 current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
 
@@ -29,16 +27,10 @@ push_command=$(ps -ocommand= -p $PPID)
 
 is_destructive='push|force|delete|\-f'
 
-do_exit(){
-  echo $policy
-  exit 1
-}
-
 if [[ $push_command =~ $is_destructive ]] && [ $current_branch != $main_branch ]; then
-  do_exit
+  echo '[Policy] Never force push or delete the experiment branch! (Prevented with pre-push hook.)'
+  exit 1
 fi
-
-unset do_exit
 
 exit 0
 EOM
