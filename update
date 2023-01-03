@@ -2,6 +2,7 @@
 
 images=(
   amazon/aws-cli
+  node:19-bullseye-slim
 )
 
 printf "%s\n" "${images[@]}" | xargs -n 1 -P 3 docker pull
