@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+images=(
+  amazon/aws-cli
+)
+
+printf "%s\n" "${images[@]}" | xargs -n 1 -P 3 docker pull
