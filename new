@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+if [[ -n $(git status --porcelain) ]];
+then
+  if [[ $(git rev-parse --abbrev-ref HEAD) == "main" ]];
+  then
+    echo 'Uncommitted files present on main. You can clean it with:'
+    echo 'git checkout .'
+    exit 1
+  fi
+
+  git add .
+  git commit -am "WIP"
+fi
+
+date=$(date '+%Y-%m-%d--%H-%M')
+title=$(echo "${date}--${@}" | tr ' ' '-')
+
+git checkout main
+git pull
+git checkout -b $title
